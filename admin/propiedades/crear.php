@@ -67,7 +67,6 @@
                 header('Location: /bienesraices/admin/index.php');
             }
         }
-       
     }
     require '../../includes/funciones.php';
     incluirTemplate('header');
