@@ -9,4 +9,29 @@
     &.error{
         background-color: var.$rojo;
     }
+    &.exito{
+        background-color: var.$verde;
+    }
+}
+
+table.propiedades{
+    margin-top: 4rem;
+    width: 100%;
+    border-spacing: 0;
+    thead{
+        background-color: var.$verde;
+    }
+    th{
+        color: var.$blanco;
+        padding: 2rem;
+    }
+    .imagen-tabla{
+        width: 10rem;
+    }
+    td{
+        text-align: center;
+    }
+}
+.imagen-small{
+    width: 20rem;
 }
