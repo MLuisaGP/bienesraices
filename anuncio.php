@@ -1,6 +1,6 @@
 <?php
 
-    require 'includes/config/database.php';
+    require 'includes/app.php';
     $id = $_GET["id"];
     $id = filter_var($id,FILTER_VALIDATE_INT);
     if(!$id){
@@ -12,7 +12,6 @@
     $resultado = mysqli_query($db, $query);
     $propiedad = mysqli_fetch_assoc($resultado);
 
-    require 'includes/funciones.php';
     incluirTemplate('header');
 ?>
 

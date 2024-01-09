@@ -1,0 +1,19 @@
+{
+    "name": "luisa/bienesraices",
+    "description": "Creando un proyecto con POO",
+    "autoload": {
+        "psr-4": {
+            "Luisa\\Bienesraices\\": "src/",
+            "App\\":"./class"
+        }
+    },
+    "authors": [
+        {
+            "name": "MLuisaGP",
+            "email": "luisagalazmp@gmail.com"
+        }
+    ],
+    "require": {
+        "intervention/image": "2.7"
+    }
+}

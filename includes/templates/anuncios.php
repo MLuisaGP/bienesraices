@@ -1,5 +1,5 @@
 <?php
-    require 'includes/config/database.php';
+ //no es necesario importar la carpeta de conectar la  bd ya que se encuentra importada en el archivo de index con app.php
     $db = conectarDB();
     $query = "SELECT * FROM propiedades";
     if($inicio){
