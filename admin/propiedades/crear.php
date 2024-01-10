@@ -47,6 +47,7 @@
             $image->save(CARPETA_IMAGENES.$nombreImagen);
             //Guarda en la ase de datos
             $respuesta=$propiedad->guardar();
+            
             //mensaje de exito o error
             if($respuesta){
                 //redirecionar al usuario 

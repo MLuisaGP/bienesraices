@@ -2,7 +2,9 @@
     require '../includes/app.php';
     
     estaAutenticado();
-    use App\propiedad;
+    use App\Propiedad;
+    use App\Vendedor;
+    
     $propiedades = Propiedad::all();
     //Muestra mensaje condicional
     $mensaje = $_GET['resultado']??null;
@@ -10,17 +12,13 @@
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $id = $_POST['id'];
         $id = filter_var($id, FILTER_VALIDATE_INT);
+
         if($id){
-            //Eliminar el archivo
-            $query = "SELECT imagen from propiedades where id_propiedad = $id ";
-            $resultado = mysqli_query($db, $query);
-            $propiedad = mysqli_fetch_assoc($resultado);
-            unlink("../imagenes/".$propiedad['imagen']);
-            //Elimina la propiedad
-            $query = "DELETE FROM propiedades WHERE id_propiedad = $id";
-            $resultado = mysqli_query($db, $query);
+            $propiedad = Propiedad::byId($id);
+            $resultado=$propiedad->eliminar();
             if($resultado){
-                header('Location: /bienesraices/admin/index.php?resultado=3');
+                
+                header('Location: Location: /bienesraices/admin/index.php?resultado=3');
             }
         }
     }
