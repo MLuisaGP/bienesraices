@@ -20,7 +20,7 @@
             $query = "DELETE FROM propiedades WHERE id_propiedad = $id";
             $resultado = mysqli_query($db, $query);
             if($resultado){
-                header('/bienesraices/admin/index.php?resultado=3');
+                header('Location: /bienesraices/admin/index.php?resultado=3');
             }
         }
     }

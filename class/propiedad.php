@@ -58,7 +58,7 @@ class Propiedad{
     }
 
     public function guardar(){
-        if(isset($this->id_propiedad)){
+        if($this->id_propiedad!=""){
             return $this->actualizar();
         }else{
             return $this->crear();
