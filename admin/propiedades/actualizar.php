@@ -1,6 +1,7 @@
 <?php
 
 use App\Propiedad;
+use App\Vendedor;
 use Intervention\Image\ImageManagerStatic as Image;
 
     require '../../includes/app.php';
@@ -9,16 +10,13 @@ use Intervention\Image\ImageManagerStatic as Image;
     $id=filter_var($id,FILTER_VALIDATE_INT);
 
     if(!$id){
-        header('Location: /bienesraices/admin/index.php');//?redirecionar al usuario si no existe el id
+        header('Location: '.ADMIN_URL);//?redirecionar al usuario si no existe el id
     }
     $propiedad = Propiedad::byId($id); //?obtenemos la propiedad
-    $atributos = $propiedad->atributos(); //?obtenemos los atributos de la propiedad
+    $atributosPropiedad = $propiedad->atributos(); //?obtenemos los atributos de la propiedad
     
     //* Consultar para obtener los vendedores
-    $consulta = "SELECT * FROM vendedores";
-    $resultado = mysqli_query($db, $consulta);
-
-
+    $vendedores = Vendedor::all();
 
     $errores = Propiedad::getErrores(); //?Arreglo con mensajes de errores
     $errores=[];
@@ -26,20 +24,23 @@ use Intervention\Image\ImageManagerStatic as Image;
     //*Ejecutar el código después de que el usuario envia el formulario
     if($_SERVER["REQUEST_METHOD"]==='POST'){
 
-        $atributos=$propiedad->sicronizar($_POST);//? Sincronizamos y obtenemos los atributos ya sincronizados
-        echo '<pre>'; print_r($atributos); echo '</pre>';
+        $atributosPropiedad=$propiedad->sicronizar($_POST);//? Sincronizamos y obtenemos los atributos ya sincronizados
         $errores = $propiedad->validar(); //* validamos el formulario
         
         if(empty($errores)){
-            $nombreImagen = md5(uniqid(rand(),true)).".jpg"; //?Generar un nombre único
+            $nombreImagen = md5(uniqid(rand(),true)).".jpg"; //?Generar un nombre único 
+            
             if($_FILES['imagen']['tmp_name']){//?si existe esa imagen
                 $image = Image::make($_FILES['imagen']['tmp_name'])->fit(800,600);//?crear la imagen
                 $propiedad->setImage($nombreImagen);//?insertar el nombre de la imgen en propiedad
+                $image->save(CARPETA_IMAGENES.$nombreImagen);
             }
-            $image->save(CARPETA_IMAGENES.$nombreImagen);
+            
+
             $respuesta =$propiedad->guardar();
+            
             if($respuesta){
-                header('Location: /bienesraices/admin/index.php?resultado=2');//?redirecionar al usuario 
+                header('Location: '.ADMIN_URL.'?resultado=2');//?redirecionar al usuario 
             }
         }
     }

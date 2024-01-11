@@ -1,38 +1,37 @@
 <?php
 
 namespace App;
-class Propiedad{
-    protected static $db;
-    protected static $columnasDB = [//realizar la sanitizacion automaticamente
-    "id_propiedad",
-    "titulo",
-    "precio",
-    "imagen",
-    "descripcion",
-    "habitaciones",
-    "wc",
-    "estacionamiento",
-    "fch_creado",
-    "id_vendedor"
-    ];
-    protected static $errores=[];
 
-    private $id_propiedad;
-    private $titulo;
-    private $precio;
-    private $imagen;
-    private $descripcion;
-    private $habitaciones;
-    private $wc;
-    private $estacionamiento;
-    private $fch_creado;
-    private $id_vendedor;
-    
-    public static function setDB($db){self::$db=$db;}
-    
+class Propiedad extends ActiveRecord{
+    protected static $table = "propiedades";
+    protected static $tipo = "propiedad";
+    protected static $columnasDB = [
+        "id_propiedad",
+        "titulo",
+        "precio",
+        "imagen",
+        "descripcion",
+        "habitaciones",
+        "wc",
+        "estacionamiento",
+        "fch_creado",
+        "id_vendedor"
+        ];
+    protected $id_propiedad;
+    protected $titulo;
+    protected $precio;
+    protected $imagen;
+    protected $descripcion;
+    protected $habitaciones;
+    protected $wc;
+    protected $estacionamiento;
+    protected $fch_creado;
+    protected $id_vendedor;
+
     public function __construct($args=[]) {
         
-        $this->id_propiedad     =   $args['id_propiedad']??'';
+        $this->id_propiedad     =   $args['id_propiedad']??null;
+        $this->id               =   $this->id_propiedad;
         $this->titulo           =   $args['titulo']??'';
         $this->precio           =   $args['precio']??'';
         $this->imagen           =   $args['imagen']??'';
@@ -46,7 +45,7 @@ class Propiedad{
 
     public function setImage($imagen){
         
-        if(isset($this->id_propiedad)){
+        if($this->id_propiedad!=null){
             $existeArchivo = file_exists(CARPETA_IMAGENES.$this->imagen);
             if($existeArchivo){
                 unlink(CARPETA_IMAGENES.$this->imagen);//?eliminar la imagen previa
@@ -57,68 +56,12 @@ class Propiedad{
         }
     }
 
-    public function guardar(){
-        if($this->id_propiedad!=""){
-            return $this->actualizar();
-        }else{
-            return $this->crear();
-        }
-    }
 
-    protected function actualizar(){
-        //Sanitizar los datos
-        $atributos = $this->sanitizarAtributos();
-        $listStr=[];
-        foreach($atributos as $key=>$value){
-            $listStr[] = "$key = '$value'";
-        }
-        $str= join(', ',$listStr);
-        $id = self::$db->escape_string($this->id_propiedad);
-        $query="UPDATE propiedades set $str where id_propiedad= '$id';";
-        $resultado = self::$db->query($query);
-        return $resultado;
-    }
 
-    protected function crear(){
-
-        //Sanitizar los datos
-        $atributos = $this->sanitizarAtributos();
-        $campos = join(', ',array_keys($atributos));
-        $valores = join("', '",array_values($atributos));
-
-        $query = "INSERT INTO propiedades ($campos) VALUES ('$valores');";
-        
-        $resultado = self::$db->query($query);
-        return $resultado;
-    }
-
-    //Identifica y une los atributos de la BD
-    public function atributos(bool $todos=false):array{
-        $atributos=[];
-        foreach(self::$columnasDB as $columna){
-            if($columna === 'id_propiedad' && !$todos) continue;
-            $atributos[$columna] = $this->$columna;
-        }
-        return $atributos;
-    }
-
-    protected function sanitizarAtributos():array{
-        $atributos = $this->atributos();
-        $sanitizado =[];
-        foreach($atributos as $key=>$value){
-            $sanitizado[$key]=self::$db->escape_string($value);
-        }
-        return $sanitizado;
-    }
-
-    //validacion
-    public static function getErrores(){
-        return self::$errores;
-    }
 
     public function validar(){
         if(!$this->titulo){
-            self::$errores[]="Debes añadir un titulo";
+           self::$errores[]="Debes añadir un titulo";
        }
        if(!$this->precio){
            self::$errores[]="Debes añadir un precio";
@@ -141,55 +84,8 @@ class Propiedad{
     return self::$errores;
     }
 
-    //*Listar todas las propiedades
-    public static function all():array{
-        $query = "SELECT * FROM propiedades";
-        $resultado=self::consultarSQL($query);
-        return $resultado;
-    }
-    //*Listar una propiedad
-    public static function byId($id):Propiedad{
-        $query = "SELECT * FROM propiedades where id_propiedad = $id";
-        $resultado=self::consultarSQL($query);
-        return array_shift($resultado);
+    public function definirValores(){
+        parent::__construct($this->id_propiedad);
     }
 
-    protected static function consultarSQL($query):array{
-        //Consultar la base de datos 
-        $resultado = self::$db->query($query);
-        //Iteral losresultados
-        $array = [];
-        while($registro = $resultado->fetch_assoc()){
-            $array[]=self::crearObjeto($registro);
-        }
-        //liberar la memoria
-        $resultado->free();//libera la memoria del servidor
-        //retornar los resultados
-        return $array;
-    }
-
-    //*Se tranforma el resulato a objetos
-    protected static function crearObjeto($registro):Propiedad{
-        $objeto = new self;
-        
-        foreach($registro as $key=>$value){
-            if(property_exists($objeto, $key)){ //si existe la propiedad con el nombre de la key en objeto
-                $objeto->$key = $value;
-            }
-        }
-        return $objeto;
-    }
-
-    //Sincroniza el objeto en memoria con los cambios realizados por el usuario
-    public function sicronizar(array $args = []){
-        foreach($args as $key=>$value){
-            if(property_exists($this, $key)){ //si existe la propiedad con el nombre de la key en objeto
-                if($this->$key != $value){
-                    $this->$key =$value;
-                }
-            }
-        }
-        $atributos = $this->atributos();
-        return $atributos;
-    }
 }

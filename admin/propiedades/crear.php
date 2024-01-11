@@ -1,15 +1,14 @@
 <?php
     require '../../includes/app.php';
     use App\Propiedad;
+    use App\Vendedor;
     use Intervention\Image\ImageManagerStatic as Image;
 
     estaAutenticado();
-    //base de datos
-    $db = conectarDB();
 
     // Consultar para obtener los vendedores
-    $consulta = "SELECT * FROM vendedores";
-    $resultado = mysqli_query($db, $consulta);
+    $vendedores = Vendedor::all();
+    
     $errores = Propiedad::getErrores();
     //Arreglo con mensajes de errores
     $errores=[];
@@ -17,7 +16,7 @@
     if($_SERVER["REQUEST_METHOD"]==='POST'){
         //* Crea una nueva instancia */
         $propiedad = new Propiedad($_POST);
-        $atributos = $propiedad->atributos();
+        $atributosPropiedad = $propiedad->atributos();
 
         //****subida de archivos****/
         //crear carpeta
@@ -46,12 +45,11 @@
             }
             $image->save(CARPETA_IMAGENES.$nombreImagen);
             //Guarda en la ase de datos
-            $respuesta=$propiedad->guardar();
-            
+            $respuesta=$propiedad->guardar();            
             //mensaje de exito o error
             if($respuesta){
                 //redirecionar al usuario 
-                header('Location: /bienesraices/admin/index.php?resultado=1');
+                header('Location: '.ADMIN_URL.'?resultado=1');
             }
         }
     }

@@ -1,15 +1,15 @@
 <?php
- //no es necesario importar la carpeta de conectar la  bd ya que se encuentra importada en el archivo de index con app.php
-    $db = conectarDB();
-    $query = "SELECT * FROM propiedades";
+    use App\Propiedad;
+    $propiedades = Propiedad::all();
     if($inicio){
-        $query = $query ." LIMIT 3";
+        $propiedades = array_slice($propiedades, 0, 3);
     }
-    $resultado = mysqli_query($db, $query);
 ?>
 
 <div class="contenedor-anuncios"><!--*Contenedor de anuncios-->
-    <?php while($row = mysqli_fetch_assoc($resultado)): ?>
+    <?php foreach($propiedades as $propiedad): 
+        $row = $propiedad->atributos(true);
+        ?>
     <div class="anuncio"><!--*anuncio1-->
     <img loading="lazy" src="/bienesraices/imagenes/<?php echo $row['imagen'] ?>" type="image/jpg" alt="Anuncio <?php echo $row['titulo'] ?>">
         <div class="contenido-anuncio"><!--*contenido anuncio-->
@@ -33,10 +33,5 @@
             <a href="anuncio.php?id=<?php echo $row['id_propiedad'] ?>" class="boton-amarillo-block">Ver Propiedad</a>
         </div><!--?contenido anuncio-->
     </div><!--?anuncio1-->
-    <?php endwhile;?>
+    <?php endforeach;?>
 </div><!--?Contenedor de anuncios-->
-
-<?php
-    //cerrar la conexion
-    mysqli_close($db);
-?>

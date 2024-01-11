@@ -28,10 +28,10 @@
                         <img src="/bienesraices/build/img/barras.svg" alt="icono menu responsivle">
                     </div>
                     <nav class="navegacion">
-                        <a href="nosotros.php">Nosotros</a>
-                        <a href="anuncios.php">Anuncios</a>
-                        <a href="blog.php">Blog</a>
-                        <a href="contacto.php">Contacto</a>
+                        <a href="/bienesraices/nosotros.php">Nosotros</a>
+                        <a href="/bienesraices/anuncios.php">Anuncios</a>
+                        <a href="/bienesraices/blog.php">Blog</a>
+                        <a href="/bienesraices/contacto.php">Contacto</a>
                         <?php if($auth):?>
                             <a href="cerrar-sesion.php">Cerrar Sesión</a>
                         <?php endif;?>

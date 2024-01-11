@@ -1,22 +1,20 @@
 <?php
 
     require 'includes/app.php';
+    use App\Propiedad;
     $id = $_GET["id"];
     $id = filter_var($id,FILTER_VALIDATE_INT);
     if(!$id){
         header('Location: /bienesraices/index.php');
     }
-    $db = conectarDB();
-    $query = "SELECT * FROM propiedades WHERE id_propiedad = $id";
-    
-    $resultado = mysqli_query($db, $query);
-    $propiedad = mysqli_fetch_assoc($resultado);
+    $propiedad = Propiedad::byId($id);
+    $propiedad = $propiedad->atributos(true);
 
     incluirTemplate('header');
 ?>
 
     <main class="contenedor seccion contenido-centrado">
-        <h2>Casas y Departamentos en Venta</h2>
+        <h2><?php echo $propiedad['titulo'] ?></h2>
         <img loading="lazy" src="/bienesraices/imagenes/<?php echo $propiedad['imagen'] ?>" type="image/jpg" alt="Anuncio <?php echo $propiedad['titulo'] ?>">
         <div class="resumen-propiedad">
             <p class="precio">$<?php echo $propiedad['precio']?></p>
